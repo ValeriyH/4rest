@@ -1,0 +1,248 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Images/2d_animation_player-run.png" type="Texture" id=1]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends KinematicBody2D
+
+
+var speed = 200
+var items = 0
+var inventory = {}
+var touch_action = false
+var velocity = Vector2()
+
+signal inventory_changed(new_inventory)
+onready var dig_sound = load(\"res://Sounds/dig.ogg\")
+onready var pickup_sound = load(\"res://Sounds/pickup.wav\")
+onready var main = Global.get_main()
+var world_rect
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	world_rect = main.get_world_rect() as Rect2
+
+func _input(event):
+	if event is InputEventScreenTouch:
+		touch_action = event.pressed
+		
+	if event is InputEventScreenDrag:
+		velocity = event.relative.normalized() * speed
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	var animate = false
+	if !touch_action:
+		velocity = Vector2()
+	else:
+		animate = true
+		
+	if Input.is_action_pressed(\"ui_up\"):
+		velocity.y = -speed
+		animate = true
+	if Input.is_action_pressed(\"ui_down\"):
+		velocity.y = speed
+		animate = true
+	if Input.is_action_pressed(\"ui_left\"):
+		velocity.x = -speed
+		animate = true
+		
+		if $PlantArea.position.x > 0:
+			#PlantArea should be before player
+			$PlantArea.position.x = -$PlantArea.position.x
+	if Input.is_action_pressed(\"ui_right\"):
+		velocity.x = speed
+		animate = true
+		if $PlantArea.position.x < 0:
+			#PlantArea should be after player
+			$PlantArea.position.x =  -$PlantArea.position.x
+	if animate:
+		$Animation.play(\"Walk\")
+	else:
+		$Animation.stop()
+	
+	if velocity.x < 0:
+		$Sprite.flip_h = true
+	else:
+		$Sprite.flip_h = false
+	
+	if Input.is_action_just_pressed(\"ui_accept\"):
+		plant()
+
+	if Input.is_action_just_pressed(\"ui_help\"):
+		print_debug_info()
+	
+	var collision  = move_and_collide(velocity * delta)
+	if collision:
+		check_collision(collision)
+	
+	position.x = clamp(position.x, world_rect.position.x, world_rect.end.x)
+	position.y = clamp(position.y, world_rect.position.y, world_rect.end.y)
+
+func check_collision(collision):
+	if collision is KinematicCollision2D:
+		var collider = collision.collider as Node2D
+		if collider.has_method(\"_player_collision\"):
+			var result = collider.call(\"_player_collision\", self)
+	
+func pickItem(item):
+	items += 1
+	print(\"Pick item:\", item.item)
+	if item.item in inventory.keys():
+		inventory[item.item] += 1
+	else:
+		inventory[item.item] = 1
+	$Audio.stream = pickup_sound
+	$Audio.play()
+	emit_signal(\"inventory_changed\", inventory)
+
+func plant():
+	#check inventory has seeeds
+	if !inventory.has(\"seed\") or inventory[\"seed\"] <= 0:
+		return
+	
+	#check no items on the floor
+	var overlaps = $PlantArea.get_overlapping_bodies()
+	if overlaps.empty():
+		if main.plant_tree($PlantArea.global_position):
+			#Plant tree
+			print(\"Tree planted\")
+			inventory[\"seed\"] -= 1 
+			dig_sound.set_loop(false)
+			$Audio.stream = dig_sound
+			$Audio.play()
+			emit_signal(\"inventory_changed\", inventory)	
+	else:
+		print(\"Can't plant because overlapping with\")
+		for i in overlaps:
+			print(i.name)
+
+##########################
+# Testing information
+##########################
+var rect : Rect2
+func _draw():
+	draw_rect(rect, Color.firebrick, true)
+	pass
+	
+func print_debug_info():
+	var coords = $PlantArea.global_position
+	#	var space_state = get_world_2d().direct_space_state
+	#	var result2 = space_state.intersect_point(coords)
+	#	print(result2)
+	var space_state = get_world_2d().direct_space_state
+	for owner in get_shape_owners():
+		print(\"Shape owner_ID \", owner, \" has \", shape_owner_get_shape_count(owner), \" shapes\")
+		for index in range(shape_owner_get_shape_count(owner)):
+			var shape = shape_owner_get_shape(owner, index)
+			print(\"Received shape \", shape.get_class())
+			var q = Physics2DShapeQueryParameters.new()
+			#q.motion = shape.origin
+			q.set_shape(shape)
+			q.motion = coords
+			#var arr = space_state.collide_shape(q)
+			var arr = space_state.get_rest_info(q)
+			print(\"get_rest_info \", arr)
+			
+	# use global coordinates, not local to node
+
+	var rect_glb = Rect2(coords.x, coords.y, 10, 10)
+	rect = rect_glb
+	rect.position = to_local(rect.position)
+	update()	
+	var result = space_state.intersect_ray(rect_glb.position, rect_glb.end)
+	print(\"intersect_ray \", result)
+	var result2 = space_state.intersect_point(coords)
+	print(\"intersect_point \", result2)	
+
+
+"
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 8.63545, 10.6527 )
+
+[sub_resource type="CapsuleShape2D" id=3]
+height = 6.39851
+
+[sub_resource type="GDScript" id=4]
+script/source = "extends Camera2D
+
+onready var zoomfacror = 1
+onready var zoomspeed = 20
+onready var zoomstep = 0.03
+onready var facrorstep = 0.01
+
+func _ready():
+	pass # Replace with function body.
+
+func _process(delta):
+	
+	zoom.x = lerp(zoom.x, zoom.x * zoomfacror, zoomspeed * delta)
+	zoom.y = lerp(zoom.y, zoom.y * zoomfacror, zoomspeed * delta)
+	
+	zoom.x = clamp(zoom.x, 0.5, 2)
+	zoom.y = clamp(zoom.y, 0.5, 2)
+	
+	if zoomfacror > 1:
+		zoomfacror -= facrorstep
+	elif zoomfacror < 1:
+		zoomfacror += facrorstep
+		
+func _input(event):
+	if event is InputEventMouseButton:
+		if event.button_index == BUTTON_WHEEL_UP :
+			zoomfacror -= zoomstep
+		elif event.button_index == BUTTON_WHEEL_DOWN :
+			zoomfacror += zoomstep
+"
+
+[sub_resource type="Animation" id=5]
+resource_name = "Walk"
+length = 0.6
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 0.1, 0.2, 0.3, 0.4, 0.5 ),
+"transitions": PoolRealArray( 1, 1, 1, 1, 1, 1 ),
+"update": 1,
+"values": [ 0, 1, 2, 3, 4, 5 ]
+}
+
+[node name="Player" type="KinematicBody2D" groups=[
+"Player",
+]]
+collision_layer = 0
+collision_mask = 26
+script = SubResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="."]
+texture = ExtResource( 1 )
+hframes = 6
+frame = 5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( -1.12247, 5.05109 )
+shape = SubResource( 2 )
+
+[node name="PlantArea" type="Area2D" parent="."]
+position = Vector2( 20.7887, 5.19717 )
+input_pickable = false
+collision_layer = 0
+collision_mask = 31
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlantArea"]
+shape = SubResource( 3 )
+
+[node name="Camera" type="Camera2D" parent="."]
+current = true
+script = SubResource( 4 )
+
+[node name="Animation" type="AnimationPlayer" parent="."]
+anims/Walk = SubResource( 5 )
+
+[node name="Audio" type="AudioStreamPlayer2D" parent="."]

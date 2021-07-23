@@ -1,0 +1,97 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://Images/silverpanel.png" type="Texture" id=1]
+[ext_resource path="res://Scenas/InventItem.tscn" type="PackedScene" id=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends NinePatchRect
+
+onready var Item = preload (\"res://Scenas/InventItem.tscn\")
+onready var container = $Scroll/Grid
+
+func _ready():
+	clear()
+	visible = true
+	var main = get_node(\"/root/Main\")
+	main.get_player().connect(\"inventory_changed\", self, \"_on_changed_inventory\")
+	
+func clear():
+	for i in container.get_children():
+		container.remove_child(i)
+		i.queue_free()
+		
+func _on_changed_inventory(inventory):
+	clear()
+	for i in inventory.keys():
+		var item = Item.instance()
+		container.add_child(item)
+		item.set_item(i, inventory[i])
+		
+func _unhandled_input(event):
+	if event.is_action_pressed(\"ui_inventory\"):
+		visible = !visible
+"
+
+[node name="NinePatchRect" type="NinePatchRect"]
+margin_right = 200.0
+margin_bottom = 80.0
+rect_min_size = Vector2( 64, 64 )
+texture = ExtResource( 1 )
+patch_margin_left = 5
+patch_margin_right = 5
+script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Scroll" type="ScrollContainer" parent="."]
+margin_left = 3.0
+margin_top = 3.0
+margin_right = 200.0
+margin_bottom = 80.0
+rect_min_size = Vector2( 40, 40 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Grid" type="GridContainer" parent="Scroll"]
+margin_right = 172.0
+margin_bottom = 84.0
+rect_min_size = Vector2( 40, 40 )
+columns = 4
+
+[node name="InventItem" parent="Scroll/Grid" instance=ExtResource( 2 )]
+margin_right = 40.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 40, 40 )
+
+[node name="InventItem2" parent="Scroll/Grid" instance=ExtResource( 2 )]
+margin_left = 44.0
+margin_right = 84.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 40, 40 )
+
+[node name="InventItem3" parent="Scroll/Grid" instance=ExtResource( 2 )]
+margin_left = 88.0
+margin_right = 128.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 40, 40 )
+
+[node name="InventItem4" parent="Scroll/Grid" instance=ExtResource( 2 )]
+margin_left = 132.0
+margin_right = 172.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 40, 40 )
+
+[node name="InventItem5" parent="Scroll/Grid" instance=ExtResource( 2 )]
+margin_top = 44.0
+margin_right = 40.0
+margin_bottom = 84.0
+rect_min_size = Vector2( 40, 40 )
+
+[node name="InventItem6" parent="Scroll/Grid" instance=ExtResource( 2 )]
+margin_left = 44.0
+margin_top = 44.0
+margin_right = 84.0
+margin_bottom = 84.0
+rect_min_size = Vector2( 40, 40 )

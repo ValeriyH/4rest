@@ -1,0 +1,149 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://Sounds/fire.wav" type="AudioStream" id=2]
+[ext_resource path="res://Images/flame.png" type="Texture" id=3]
+[ext_resource path="res://Sounds/burn.wav" type="AudioStream" id=4]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends KinematicBody2D
+
+onready var main  = Global.get_main()
+export var speed = 50
+export var move_destination = 200
+
+enum {MOVING, STANDING}
+var state = STANDING
+var velocity = Vector2()
+var destination = Vector2()
+var world_rect = Rect2()
+var burned_items = 0 #burned items since last check. If no burned items fire will starve
+
+func _ready():
+	world_rect = main.get_world_rect() as Rect2
+	move()
+
+func _process(delta):
+	if state == MOVING:
+		var collision  = move_and_collide(velocity * delta)
+		if collision:
+			burn(collision.collider)
+		if position.distance_to(destination) < speed:
+			stop()
+		position.x = clamp(position.x, world_rect.position.x + 5, world_rect.end.x - 5)
+		position.y = clamp(position.y, world_rect.position.y + 5, world_rect.end.y - 5)
+
+func move():
+	if state == STANDING:
+		select_destination()
+		state = MOVING
+
+func stop():
+	state = STANDING
+	$MoveTimer.start(2)
+	
+func burn(node : PhysicsBody2D):
+	if node.is_in_group(\"Player\"):
+		#TODO burn player
+		return
+	
+	if node.is_in_group(\"Items\"):
+		node.get_parent().remove_child(node)
+		node.queue_free()
+	elif node.is_in_group(\"Trees\"):
+		node.collision_layer = Global.Layers.UNFIREABLE
+		node.burn()
+	$Burn.play()
+	
+	#fire grow
+	scale.x += 0.1
+	scale.y += 0.1
+	burned_items += 1
+	print(name, \" burn \", node.name, \". Current burned items \", burned_items)
+
+func select_destination():
+	randomize()
+	var x = rand_range(position.x - move_destination, position.x + move_destination)
+	var y = rand_range(position.y - move_destination, position.y + move_destination)
+	x = clamp(x, world_rect.position.x + 10, world_rect.end.x - 10)
+	y = clamp(y, world_rect.position.y + 10, world_rect.end.y - 10)	
+	destination = Vector2(x, y)
+	velocity = (destination - position).normalized() * speed
+
+func _on_Timer_timeout():
+	move()
+
+func _on_HungryTimer_timeout():
+	if burned_items == 0:
+		print(name, \" starving\")
+		scale.x -= 0.1
+		scale.y -= 0.1
+		if scale.x < 1:
+			scale.x = 1
+			scale.y = 1
+	burned_items = 0
+
+
+func _on_Audio_finished():
+	$Audio.play()
+"
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 8.31632, 8.72106 )
+
+[sub_resource type="Animation" id=3]
+resource_name = "fire"
+length = 3.0
+loop = true
+step = 0.2
+tracks/0/type = "value"
+tracks/0/path = NodePath("Sprite:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 2.99179 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0, 71 ]
+}
+
+[node name="Enemy" type="KinematicBody2D" groups=[
+"Enemy",
+]]
+collision_layer = 0
+script = SubResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 0.186722, -6.88608 )
+scale = Vector2( 0.4, 0.4 )
+texture = ExtResource( 3 )
+hframes = 12
+vframes = 6
+frame = 40
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( -0.262211, -0.264881 )
+shape = SubResource( 2 )
+
+[node name="HungryTimer" type="Timer" parent="."]
+wait_time = 300.0
+autostart = true
+
+[node name="MoveTimer" type="Timer" parent="."]
+
+[node name="Audio" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 2 )
+autoplay = true
+
+[node name="Burn" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 4 )
+volume_db = 0.1
+
+[node name="Animation" type="AnimationPlayer" parent="."]
+autoplay = "fire"
+anims/fire = SubResource( 3 )
+
+[connection signal="timeout" from="HungryTimer" to="." method="_on_HungryTimer_timeout"]
+[connection signal="timeout" from="MoveTimer" to="." method="_on_Timer_timeout"]
+[connection signal="finished" from="Audio" to="." method="_on_Audio_finished"]

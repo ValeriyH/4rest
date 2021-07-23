@@ -1,0 +1,4 @@
+#ignore by git
+/.import/*
+*.import
+!/docs/*.import
