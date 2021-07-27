@@ -34,28 +34,35 @@ func _process(delta):
 	var animate = false
 	if !touch_action:
 		velocity = Vector2()
+		if Input.is_action_pressed(\"ui_up\"):
+			velocity.y = -speed
+			animate = true
+		if Input.is_action_pressed(\"ui_down\"):
+			velocity.y = speed
+			animate = true
+		if Input.is_action_pressed(\"ui_left\"):
+			velocity.x = -speed
+			animate = true
+		if Input.is_action_pressed(\"ui_right\"):
+			velocity.x = speed
+			animate = true
 	else:
 		animate = true
+	
+	if Input.is_action_just_pressed(\"ui_plant\"):
+		plant()
 		
-	if Input.is_action_pressed(\"ui_up\"):
-		velocity.y = -speed
-		animate = true
-	if Input.is_action_pressed(\"ui_down\"):
-		velocity.y = speed
-		animate = true
-	if Input.is_action_pressed(\"ui_left\"):
-		velocity.x = -speed
-		animate = true
-		
-		if $PlantArea.position.x > 0:
-			#PlantArea should be before player
-			$PlantArea.position.x = -$PlantArea.position.x
-	if Input.is_action_pressed(\"ui_right\"):
-		velocity.x = speed
-		animate = true
-		if $PlantArea.position.x < 0:
-			#PlantArea should be after player
-			$PlantArea.position.x =  -$PlantArea.position.x
+	if Input.is_action_pressed(\"ui_plant\"):
+		#don't move anythere till plant action not released
+		return
+
+	if $PlantArea.position.x > 0 and velocity.x < 0:
+		#PlantArea should be before player
+		$PlantArea.position.x = -$PlantArea.position.x
+	if $PlantArea.position.x < 0 and velocity.x > 0:
+		#PlantArea should be after player
+		$PlantArea.position.x =  -$PlantArea.position.x
+
 	if animate:
 		$Animation.play(\"Walk\")
 	else:
@@ -63,11 +70,8 @@ func _process(delta):
 	
 	if velocity.x < 0:
 		$Sprite.flip_h = true
-	else:
+	elif velocity.x > 0:
 		$Sprite.flip_h = false
-	
-	if Input.is_action_just_pressed(\"ui_accept\"):
-		plant()
 
 	if Input.is_action_just_pressed(\"ui_help\"):
 		print_debug_info()
