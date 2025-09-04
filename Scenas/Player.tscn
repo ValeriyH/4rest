@@ -5,8 +5,11 @@
 [sub_resource type="GDScript" id=1]
 script/source = "extends KinematicBody2D
 
+const grass_id = 0
+const water_id = 1
+const road_id = 2
 
-var speed = 200
+var base_speed = 200
 var items = 0
 var inventory = {}
 var touch_action = false
@@ -27,11 +30,12 @@ func _input(event):
 		touch_action = event.pressed
 		
 	if event is InputEventScreenDrag:
-		velocity = event.relative.normalized() * speed
+		velocity = event.relative.normalized() * base_speed
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	var animate = false
+	var speed = get_speed()
 	if !touch_action:
 		velocity = Vector2()
 		if Input.is_action_pressed(\"ui_up\"):
@@ -83,11 +87,21 @@ func _process(delta):
 	position.x = clamp(position.x, world_rect.position.x, world_rect.end.x)
 	position.y = clamp(position.y, world_rect.position.y, world_rect.end.y)
 
+func get_speed():
+	var tilemap = main.get_tile()
+	var tile_coord = tilemap.world_to_map(global_position)
+	var tile_id = tilemap.get_cell(tile_coord.x, tile_coord.y)
+	var speed  = base_speed	
+	if tile_id == road_id:
+		# Player is on the road. Set to a high speed.
+		speed = base_speed * 1.5 
+	return speed
+		
 func check_collision(collision):
 	if collision is KinematicCollision2D:
 		var collider = collision.collider as Node2D
 		if collider.has_method(\"_player_collision\"):
-			var result = collider.call(\"_player_collision\", self)
+			collider.call(\"_player_collision\", self)
 	
 func pickItem(item):
 	items += 1
@@ -217,11 +231,9 @@ tracks/0/keys = {
 "values": [ 0, 1, 2, 3, 4, 5 ]
 }
 
-[node name="Player" type="KinematicBody2D" groups=[
-"Player",
-]]
+[node name="Player" type="KinematicBody2D" groups=["Player"]]
 collision_layer = 0
-collision_mask = 26
+collision_mask = 56
 script = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
@@ -235,9 +247,9 @@ shape = SubResource( 2 )
 
 [node name="PlantArea" type="Area2D" parent="."]
 position = Vector2( 20.7887, 5.19717 )
-input_pickable = false
 collision_layer = 0
-collision_mask = 31
+collision_mask = 63
+input_pickable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlantArea"]
 shape = SubResource( 3 )

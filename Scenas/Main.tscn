@@ -9,6 +9,9 @@ script/source = "extends Node2D
 
 func _ready():
 	pass
+
+func get_tile():
+	return $World/TileMap
 	
 func get_tile_size():
 	var tile = $World/TileMap
@@ -21,7 +24,7 @@ func get_world_node():
 	return $World
 	
 func get_world_rect():
-	return Rect2(-600, -300, 2100, 1300)
+	return Rect2(-1300, -750, 3800, 1750)
 
 func plant_tree(global_coords):
 	return $World.add_plant(global_coords)

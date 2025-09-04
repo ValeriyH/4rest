@@ -16,12 +16,16 @@ func set_item(item_name):
 	$Sprite.texture = load(\"res://Images/Items/%s.png\" % item_name)
 	item = item_name
 	
+func burn(_fire):
+	get_parent().remove_child(self)
+	queue_free()
+	
 func _player_collision(player):
 	player.pickItem(self)
 	get_parent().remove_child(self)
 	queue_free()
 
-func _on_Item_input_event(viewport, event, shape_idx):
+func _on_Item_input_event(_viewport, event, _shape_idx):
 	if event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT:
 			var pl = main.get_player()
@@ -33,13 +37,10 @@ func _on_Item_input_event(viewport, event, shape_idx):
 
 [sub_resource type="RectangleShape2D" id=2]
 
-[node name="Item" type="StaticBody2D" groups=[
-"Bodies",
-"Items",
-]]
-input_pickable = true
+[node name="Item" type="StaticBody2D" groups=["Bodies", "Items"]]
 collision_layer = 9
-collision_mask = 0
+collision_mask = 56
+input_pickable = true
 script = SubResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]

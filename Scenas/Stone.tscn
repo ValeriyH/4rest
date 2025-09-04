@@ -5,10 +5,7 @@
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 13.2987, 11.8839 )
 
-[node name="Stone" type="StaticBody2D" groups=[
-"Bodies",
-"Stones",
-]]
+[node name="Stone" type="StaticBody2D" groups=["Bodies", "Stones"]]
 collision_layer = 18
 collision_mask = 0
 
