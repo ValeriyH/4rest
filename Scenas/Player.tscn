@@ -14,6 +14,7 @@ var items = 0
 var inventory = {}
 var touch_action = false
 var velocity = Vector2()
+var home = Vector2(38, 57)
 
 signal inventory_changed(new_inventory)
 onready var dig_sound = load(\"res://Sounds/dig.ogg\")
@@ -96,7 +97,15 @@ func get_speed():
 		# Player is on the road. Set to a high speed.
 		speed = base_speed * 1.5 
 	return speed
-		
+	
+func burn(_fire):
+	if inventory.has(\"heart\") and inventory[\"heart\"] > 0: 
+		position = home
+		inventory[\"heart\"] -= 1
+		emit_signal(\"inventory_changed\", inventory)
+	else:
+		main.end_game()
+	
 func check_collision(collision):
 	if collision is KinematicCollision2D:
 		var collider = collision.collider as Node2D
@@ -239,7 +248,7 @@ script = SubResource( 1 )
 [node name="Sprite" type="Sprite" parent="."]
 texture = ExtResource( 1 )
 hframes = 6
-frame = 5
+frame = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( -1.12247, 5.05109 )

@@ -28,6 +28,9 @@ func get_world_rect():
 
 func plant_tree(global_coords):
 	return $World.add_plant(global_coords)
+	
+func end_game():
+	get_tree().change_scene(\"res://Scenas/Menu.tscn\")
 "
 
 [node name="Main" type="Node2D"]

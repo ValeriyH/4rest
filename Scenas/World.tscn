@@ -96,6 +96,7 @@ tile_data = PoolIntArray( -1507370, 1, 0, -1507369, 1, 0, -1507368, 1, 0, -15073
 [node name="Player" parent="." instance=ExtResource( 1 )]
 position = Vector2( 58.4473, 37.3457 )
 z_index = 1
+collision_layer = 1
 
 [node name="Nature" type="Node2D" parent="."]
 

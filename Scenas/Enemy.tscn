@@ -52,12 +52,6 @@ func move():
 func stop():
 	state = STANDING
 	$MoveTimer.start(2)
-	
-func check_collision(collision):
-	if collision is KinematicCollision2D:
-		var collider = collision.collider as Node2D
-		if collider.has_method(\"_player_collision\"):
-			collider.call(\"_player_collision\", self)
 
 func select_destination():
 	randomize()
