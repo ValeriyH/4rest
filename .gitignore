@@ -2,3 +2,4 @@
 /.import/*
 *.import
 !/docs/*.import
+android/

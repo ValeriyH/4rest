@@ -40,9 +40,6 @@ texture = ExtResource( 1 )
 patch_margin_left = 5
 patch_margin_right = 5
 script = SubResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Scroll" type="ScrollContainer" parent="."]
 margin_left = 3.0

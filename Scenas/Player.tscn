@@ -182,7 +182,11 @@ func print_debug_info():
 	var result2 = space_state.intersect_point(coords)
 	print(\"intersect_point \", result2)	
 
+func _on_Bridge_entered(body):
+	body.set_collision_mask_bit(Global.LayerBit.WATER, false)
 
+func _on_Bridge_exited(body):
+	body.set_collision_mask_bit(Global.LayerBit.WATER, true)
 "
 
 [sub_resource type="RectangleShape2D" id=2]

@@ -1,5 +1,14 @@
 extends Node
 
+enum LayerBit {
+	FIREABLE = 0,
+	UNFIREABLE = 1,
+	TREE = 2,
+	ITEM = 3,
+	STONE = 4,
+	WATER = 5
+}
+
 enum Layers {
 	FIREABLE = 0b1,
 	UNFIREABLE = 0b10,
