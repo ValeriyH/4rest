@@ -25,6 +25,8 @@ coll=false
 etc=false
 lay=false
 vers=false
+SharedArrayBuffer=true
+"Shared Array Buffer"=true
 
 [input]
 
