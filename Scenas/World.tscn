@@ -1,8 +1,7 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Scenas/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Images/WorldTiles.tres" type="TileSet" id=2]
-[ext_resource path="res://Scenas/Tree.tscn" type="PackedScene" id=3]
 [ext_resource path="res://Scenas/Stone.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Scenas/Enemy.tscn" type="PackedScene" id=5]
 [ext_resource path="res://Scripts/Bridge.gd" type="Script" id=6]
@@ -38,7 +37,7 @@ func _ready():
 		var position = Vector2(
 				int(rand_range(rect.position.x, rect.end.x)), 
 				int(rand_range(rect.position.y, rect.end.y)))
-		if add_plant(position):
+		if add_plant(position, true):
 			trees += 1
 	
 func has_overlaps_point(global_coords:Vector2, layer: int = 0x7FFFFFFF):
@@ -46,10 +45,12 @@ func has_overlaps_point(global_coords:Vector2, layer: int = 0x7FFFFFFF):
 	var result = space_state.intersect_point(global_coords, 1, [], layer)
 	return !result.empty()
 	
-func add_plant(global_coords):
+func add_plant(global_coords, adult = false):
 	var should_plant = !has_overlaps_point(global_coords)
 	if should_plant:
 		var new_tree = TreeTemplate.instance()
+		if adult:
+			new_tree.state = new_tree.State.ADULT
 		$Nature.add_child(new_tree)
 		new_tree.set_global_position(global_coords)
 		new_tree.connect(\"seed_dropped\", self, \"_on_seed_dropped\")
@@ -137,86 +138,6 @@ collision_layer = 1
 
 [node name="Nature" type="Node2D" parent="."]
 position = Vector2( 14, -8 )
-
-[node name="Tree" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 232.891, 207.436 )
-state = 1
-
-[node name="Tree2" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( -56.4011, 260.969 )
-state = 1
-
-[node name="Tree15" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 1773.59, 128.033 )
-state = 1
-
-[node name="Tree16" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 1915.01, -52.986 )
-state = 1
-
-[node name="Tree17" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 1626.51, -86.9272 )
-state = 1
-
-[node name="Tree18" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 2028.15, 334.508 )
-state = 1
-
-[node name="Tree19" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 2019.66, -613.015 )
-state = 1
-
-[node name="Tree20" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 382.005, -448.966 )
-state = 1
-
-[node name="Tree3" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( -123.81, 497.904 )
-state = 1
-
-[node name="Tree4" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 421.472, 532.609 )
-state = 1
-
-[node name="Tree5" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( -199.773, -34.4264 )
-state = 1
-
-[node name="Tree6" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 621.891, 59.7737 )
-state = 1
-
-[node name="Tree7" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 507.798, -223.011 )
-state = 1
-
-[node name="Tree8" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 286.119, -113.455 )
-state = 1
-
-[node name="Tree9" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 9.35387, -122.586 )
-state = 1
-
-[node name="Tree10" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 217.65, 495.717 )
-state = 1
-
-[node name="Tree11" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 998.639, 357.716 )
-state = 1
-
-[node name="Tree12" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 1139.91, 218.127 )
-state = 1
-
-[node name="Tree13" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 1113.75, 390.31 )
-state = 1
-
-[node name="Tree14" parent="Nature" instance=ExtResource( 3 )]
-position = Vector2( 1233.22, -8.77968 )
-state = 1
 
 [node name="Stone" parent="Nature" instance=ExtResource( 4 )]
 position = Vector2( 148.381, -249.013 )
@@ -310,22 +231,27 @@ position = Vector2( 203.647, 98.9949 )
 
 [node name="Fire1" parent="Enemies" instance=ExtResource( 5 )]
 position = Vector2( 176.552, 136.726 )
+scale = Vector2( 1.5, 1.5 )
 collision_mask = 33
 
 [node name="Fire2" parent="Enemies" instance=ExtResource( 5 )]
 position = Vector2( 758.542, -74.1787 )
+scale = Vector2( 1.5, 1.5 )
 collision_mask = 33
 
 [node name="Fire3" parent="Enemies" instance=ExtResource( 5 )]
 position = Vector2( 934.741, 182.111 )
+scale = Vector2( 1.5, 1.5 )
 collision_mask = 33
 
 [node name="Fire4" parent="Enemies" instance=ExtResource( 5 )]
 position = Vector2( -143.81, 422.382 )
+scale = Vector2( 1.5, 1.5 )
 collision_mask = 33
 
 [node name="Fire5" parent="Enemies" instance=ExtResource( 5 )]
 position = Vector2( 634.402, 415.708 )
+scale = Vector2( 1.5, 1.5 )
 collision_mask = 33
 
 [connection signal="body_entered" from="Bridges" to="Player" method="_on_Bridge_entered"]

@@ -1,6 +1,6 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://Images/tree1.png" type="Texture" id=1]
+[ext_resource path="res://Images/terrain_atlas.png" type="Texture" id=1]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends StaticBody2D
@@ -21,9 +21,11 @@ signal seed_dropped(tree_item)
 
 func _ready():
 	randomize()
-	var i = int(rand_range(1,5))
-	$Sprite.texture = load(\"res://Images/tree%s.png\" % str(i))
-
+	var i = int(rand_range(1,3))
+	if i == 1:
+		$Tree1.show()
+	else:
+		$Tree2.show()
 	if state == State.GROWING:
 		scale.x = 0.3
 		scale.y = 0.3
@@ -40,7 +42,9 @@ func set_timer():
 
 func burn(_fire):
 	collision_layer = Global.Layers.UNFIREABLE
-	$Sprite.texture = load(\"res://Images/tree.png\")
+	$Tree1.hide()
+	$Tree2.hide()
+	$Burn1.show()
 	state = State.BURN
 
 func _on_Timer_timeout():
@@ -58,8 +62,23 @@ func _on_Timer_timeout():
 	set_timer()
 "
 
+[sub_resource type="AtlasTexture" id=5]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 962, -6, 63, 163 )
+
+[sub_resource type="AtlasTexture" id=4]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 738, 579, 28, 26 )
+
+[sub_resource type="AtlasTexture" id=3]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 926.825, 903.579, 99.6077, 118.103 )
+
 [sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 12.1068, 14.4 )
+extents = Vector2( 19.1657, 13 )
 
 [node name="Tree" type="StaticBody2D" groups=["Bodies", "Tree", "Trees"]]
 collision_layer = 5
@@ -68,11 +87,23 @@ script = SubResource( 1 )
 seed_interval_min = 10
 seed_interval_max = 50
 
-[node name="Sprite" type="Sprite" parent="."]
-texture = ExtResource( 1 )
+[node name="Tree1" type="Sprite" parent="."]
+visible = false
+position = Vector2( 1, -82 )
+texture = SubResource( 5 )
+
+[node name="Burn1" type="Sprite" parent="."]
+visible = false
+position = Vector2( 0, -14 )
+texture = SubResource( 4 )
+
+[node name="Tree2" type="Sprite" parent="."]
+visible = false
+position = Vector2( 3, -54 )
+texture = SubResource( 3 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( -2.78109, -1.9865 )
+position = Vector2( 0, -16 )
 shape = SubResource( 2 )
 
 [node name="Timer" type="Timer" parent="."]
