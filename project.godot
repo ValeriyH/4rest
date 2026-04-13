@@ -17,6 +17,7 @@ config/icon="res://Images/icon.png"
 [autoload]
 
 Global="*res://Scenas/Global.tscn"
+Events="*res://Scripts/Events.gd"
 
 [global]
 

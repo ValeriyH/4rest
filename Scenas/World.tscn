@@ -33,7 +33,7 @@ func _ready():
 
 	#Plant tree
 	var trees = 0
-	while trees < 50:
+	while trees < Global.INIT_TREES:
 		var position = Vector2(
 				int(rand_range(rect.position.x, rect.end.x)), 
 				int(rand_range(rect.position.y, rect.end.y)))

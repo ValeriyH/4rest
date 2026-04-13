@@ -47,9 +47,6 @@ margin_top = 3.0
 margin_right = 200.0
 margin_bottom = 80.0
 rect_min_size = Vector2( 40, 40 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Grid" type="GridContainer" parent="Scroll"]
 margin_right = 172.0
