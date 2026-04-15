@@ -35,8 +35,8 @@ jobs:
       - name: Export game
         uses: firebelley/godot-export@v7.0.0
         with:
-          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/3.5.3/Godot_v3.5.3-stable_linux_headless.64.zip
-          godot_template_download_url: https://downloads.tuxfamily.org/godotengine/3.5.3/Godot_v3.5.3-stable_export_templates.tpz
+          godot_executable_download_url: https://downloads.godotengine.org/?version=3.6.2&flavor=stable&slug=linux_headless.64.zip&platform=linux_server.headless.64
+          godot_template_download_url: https://downloads.godotengine.org/?version=3.6.2&flavor=stable&slug=export_templates.tpz&platform=templates
           use_godot_3: true
           relative_project_path: ./
           archive_export_output: false
