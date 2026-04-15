@@ -33,7 +33,6 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Export game
-        id: export
         uses: firebelley/godot-export@v7.0.0
         with:
           godot_executable_download_url: https://github.com/godotengine/godot/releases/download/3.6.2-stable/Godot_v3.6.2-stable_linux_headless.64.zip
@@ -41,13 +40,11 @@ jobs:
           use_godot_3: true
           relative_project_path: ./
           cache: true
-          relative_export_path: build/web
-          archive_output: true
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ${{ steps.export.outputs.build_directory }}
+          path: /home/runner/.local/share/godot/builds/HTML5
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
