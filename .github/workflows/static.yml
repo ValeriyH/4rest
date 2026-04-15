@@ -31,13 +31,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - uses: vitorgus/setup-godot@v1
+        
+      - name: Export game
+        uses: firebelley/godot-export@v7.0.0
         with:
-          godot-version: 3.5
-      - name: Web Build
-        run: |
-          mkdir -v -p build/web
-          godot -v --export "HTML5" ./build/web/index.html
+          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/3.5.3/Godot_v3.5.3-stable_linux_headless.64.zip
+          godot_template_download_url: https://downloads.tuxfamily.org/godotengine/3.5.3/Godot_v3.5.3-stable_export_templates.tpz
+          use_godot_3: true
+          relative_project_path: ./
+          archive_export_output: false
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
