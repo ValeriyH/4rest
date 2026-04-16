@@ -1,5 +1,7 @@
 #ignore by git
 /.import/*
 *.import
-!/docs/*.import
+#!/docs/*.import
+#Now GitHub Pages uses workflow to publish to site
+docs/
 android/
