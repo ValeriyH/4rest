@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/burn.wav-137b7d6cd50f645a29e7ab03f60eabaf.sample"
+
+[deps]
+
+source_file="res://Sounds/burn.wav"
+dest_files=[ "res://.import/burn.wav-137b7d6cd50f645a29e7ab03f60eabaf.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0
