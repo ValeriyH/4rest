@@ -26,6 +26,14 @@ func _ready():
 		var i = int (rand_range(0, items.size()))
 		if add_item(items[i], item_position):
 			items_count += 1
+	
+	var seeds_count = 0
+	while seeds_count < Global.INIT_SEEDS:
+		var item_position = Vector2(
+				int(rand_range(rect.position.x, rect.end.x)), 
+				int(rand_range(rect.position.y, rect.end.y)))
+		if add_item(\"seed\", item_position):
+			seeds_count += 1
 		
 	# Note: It is for predefined trees, dynamically created trees connect signal by themself
 	for t in get_tree().get_nodes_in_group(\"Trees\"):

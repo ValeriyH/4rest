@@ -18,7 +18,8 @@ enum Layers {
 	WATER = 0b100000
 }
 
-const INIT_TREES = 50
+const INIT_TREES = 0
+const INIT_SEEDS = 20
 
 func _ready():
 	pass
