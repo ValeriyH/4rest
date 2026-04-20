@@ -5,7 +5,7 @@ func _on_New_pressed():
 
 
 func _on_Score_pressed():
-	pass # Replace with function body.
+	OS.window_fullscreen = !OS.window_fullscreen
 
 
 func _on_Quit_pressed():

@@ -60,7 +60,7 @@ text = "New game"
 margin_top = 290.0
 margin_right = 339.0
 margin_bottom = 310.0
-text = "Scores"
+text = "Full screen"
 
 [node name="Quit" type="Button" parent="CenterContainer/VBoxContainer"]
 margin_top = 314.0
