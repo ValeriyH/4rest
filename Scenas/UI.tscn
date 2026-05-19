@@ -7,13 +7,18 @@
 [sub_resource type="GDScript" id=1]
 script/source = "extends Button
 
-func _on_Plant_button_down():
-	Input.action_press(\"ui_plant\")
+func _ready():
+	Events.connect(Events.ITEM_SELECT, self, \"_on_item_select\")
 
+func _on_action_button_down():
+	Input.action_press(\"ui_action\")
 
-func _on_Plant_button_up():
-	Input.action_release(\"ui_plant\")
+func _on_action_button_up():
+	Input.action_release(\"ui_action\")
 	
+func _on_item_select(item):
+	var img = load(\"res://Images/Items/%s.png\" % item)
+	icon = img
 "
 
 [node name="UI" type="CanvasLayer"]
@@ -39,7 +44,7 @@ anchor_bottom = 1.0
 margin_left = 1.25995
 margin_right = 1.26001
 
-[node name="Plant" type="Button" parent="Control/Controls"]
+[node name="Action" type="Button" parent="Control/Controls"]
 anchor_left = 0.916
 anchor_top = 0.275
 anchor_right = 0.916
@@ -50,9 +55,6 @@ margin_bottom = 44.0
 icon = ExtResource( 2 )
 expand_icon = true
 script = SubResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[connection signal="button_down" from="Control/Controls/Plant" to="Control/Controls/Plant" method="_on_Plant_button_down"]
-[connection signal="button_up" from="Control/Controls/Plant" to="Control/Controls/Plant" method="_on_Plant_button_up"]
+[connection signal="button_down" from="Control/Controls/Action" to="Control/Controls/Action" method="_on_action_button_down"]
+[connection signal="button_up" from="Control/Controls/Action" to="Control/Controls/Action" method="_on_action_button_up"]

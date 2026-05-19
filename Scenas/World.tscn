@@ -4,7 +4,6 @@
 [ext_resource path="res://Images/WorldTiles.tres" type="TileSet" id=2]
 [ext_resource path="res://Scenas/Stone.tscn" type="PackedScene" id=4]
 [ext_resource path="res://Scenas/Enemy.tscn" type="PackedScene" id=5]
-[ext_resource path="res://Scripts/Bridge.gd" type="Script" id=6]
 
 [sub_resource type="GDScript" id=1]
 script/source = "extends Node2D
@@ -93,8 +92,19 @@ func _on_seed_dropped(tree):
 
 "
 
+[sub_resource type="GDScript" id=3]
+script/source = "extends Area2D
+
+# On the Bridge (Area2D)
+func  body_entered(body):
+	body.set_collision_mask_bit(Global.LayerBit.WATER, false) 
+
+func body_exited(body):
+	body.set_collision_mask_bit(Global.LayerBit.WATER, true)
+"
+
 [sub_resource type="RectangleShape2D" id=2]
-extents = Vector2( 63.5, 42 )
+extents = Vector2( 63.5, 27 )
 
 [node name="World" type="Node2D"]
 script = SubResource( 1 )
@@ -105,7 +115,7 @@ collision_layer = 0
 input_pickable = false
 monitorable = false
 space_override = 3
-script = ExtResource( 6 )
+script = SubResource( 3 )
 
 [node name="Bridge1" type="CollisionShape2D" parent="Bridges"]
 light_mask = 0
@@ -114,7 +124,7 @@ shape = SubResource( 2 )
 
 [node name="Bridge2" type="CollisionShape2D" parent="Bridges"]
 light_mask = 0
-position = Vector2( 1295.5, -672 )
+position = Vector2( 1295.5, -673 )
 shape = SubResource( 2 )
 
 [node name="TileMap" type="TileMap" parent="."]

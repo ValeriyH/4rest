@@ -9,7 +9,7 @@ script/source = "extends KinematicBody2D
 
 onready var main  = Global.get_main()
 export var speed = 50
-export var move_destination = 200
+export var move_destination = 300
 
 enum {MOVING, STANDING}
 var state = STANDING
@@ -34,6 +34,10 @@ func _process(delta):
 				scale.x += 0.1
 				scale.y += 0.1
 				burned_items += 1
+				# Continue move in the same direction
+				# If fire move to direction and \"found food\" 
+				# it will try to increase this direction vector for 3 seconds
+				destination = destination + velocity * 3
 				print(name, \" burn \", collision.collider.name, \". Current burned items \", burned_items)
 			else:
 				# collide with unfirebla object like stone/water
@@ -43,6 +47,9 @@ func _process(delta):
 			stop()
 		position.x = clamp(position.x, world_rect.position.x + 5, world_rect.end.x - 5)
 		position.y = clamp(position.y, world_rect.position.y + 5, world_rect.end.y - 5)
+
+func _player_collision(player):
+	player.burn(self)
 
 func move():
 	if state == STANDING:
