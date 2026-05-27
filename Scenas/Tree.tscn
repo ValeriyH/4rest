@@ -22,6 +22,8 @@ export(State) var state = State.GROWING
 
 signal seed_dropped(tree_item)
 
+onready var tween: SceneTreeTween = create_tween().set_loops() # Infinite loop
+
 func _ready():
 	randomize()
 	var i = int(rand_range(1,3))
@@ -34,6 +36,7 @@ func _ready():
 		scale.y = 0.3
 	set_timer()
 	Events.emit_signal(Events.TREE_PLANT, self)
+	start_swaying()
 
 func set_timer():
 	if state == State.GROWING:
@@ -54,6 +57,16 @@ func burn(_fire):
 	$Burn1.show()
 	state = State.BURN
 	Events.emit_signal(Events.TREE_BURN, self)
+	if tween != null:
+		tween.kill()
+		tween = null
+
+func start_swaying():
+	# Swing right over 2 seconds with a smooth ease
+	tween.tween_property(self, \"rotation_degrees\", 2.0, 2.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	
+	# Swing left over 2 seconds
+	tween.tween_property(self, \"rotation_degrees\", -2.0, 2.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _on_Timer_timeout():
 	if state == State.GROWING:
@@ -100,9 +113,10 @@ visible = false
 position = Vector2( 1, -82 )
 
 [node name="crown" type="Sprite" parent="Tree1"]
-position = Vector2( 1, 11 )
+position = Vector2( 0, 11 )
 z_index = 2
 texture = ExtResource( 3 )
+offset = Vector2( 1, 0 )
 
 [node name="root" type="Sprite" parent="Tree1"]
 position = Vector2( 1, 66 )
