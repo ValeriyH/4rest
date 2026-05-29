@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://Images/terrain_atlas.png" type="Texture" id=1]
 [ext_resource path="res://Images/root.tres" type="Texture" id=2]
@@ -50,12 +50,18 @@ func set_timer():
 func burn(_fire):
 	if state == State.BURN:
 		return
-		
 	collision_layer = Global.Layers.UNFIREABLE
+	state = State.BURN
+	
+	$FireParticles.emitting = true
+	tween.tween_property(self, \"modulate\", Color(0, 0, 0, 0), 0.8)
+	yield(get_tree().create_timer(1.0), \"timeout\")
+	$FireParticles.emitting = false
+	
 	$Tree1.hide()
 	$Tree2.hide()
 	$Burn1.show()
-	state = State.BURN
+	
 	Events.emit_signal(Events.TREE_BURN, self)
 	if tween != null:
 		tween.kill()
@@ -100,6 +106,23 @@ region = Rect2( 926.825, 903.579, 99.6077, 118.103 )
 
 [sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 19.1657, 13 )
+
+[sub_resource type="Gradient" id=9]
+colors = PoolColorArray( 1, 1, 0, 1, 1, 1, 1, 0 )
+
+[sub_resource type="GradientTexture2D" id=8]
+gradient = SubResource( 9 )
+width = 8
+height = 8
+fill = 1
+fill_from = Vector2( 0.5, 0.5 )
+
+[sub_resource type="Curve" id=6]
+_data = [ Vector2( 0.0078329, 1 ), 0.0, 0.0, 0, 0, Vector2( 1, 0 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="Gradient" id=7]
+offsets = PoolRealArray( 0, 0.302778, 0.658333, 1 )
+colors = PoolColorArray( 1, 1, 0.552941, 1, 0.937255, 0.447059, 0.0823529, 1, 0.117647, 0.117647, 0.117647, 1, 1, 1, 1, 1 )
 
 [node name="Tree" type="StaticBody2D" groups=["Bodies", "Tree", "Trees"]]
 collision_layer = 5
@@ -156,5 +179,24 @@ shape = SubResource( 2 )
 
 [node name="Timer" type="Timer" parent="."]
 one_shot = true
+
+[node name="FireParticles" type="CPUParticles2D" parent="."]
+position = Vector2( 3, -44 )
+z_index = 3
+emitting = false
+amount = 100
+lifetime = 0.5
+preprocess = 0.8
+explosiveness = 0.7
+texture = SubResource( 8 )
+emission_shape = 2
+emission_rect_extents = Vector2( 40, 40 )
+direction = Vector2( 0, -1 )
+spread = 15.0
+gravity = Vector2( 0, -100 )
+initial_velocity = 80.0
+initial_velocity_random = 0.5
+scale_amount_curve = SubResource( 6 )
+color_ramp = SubResource( 7 )
 
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
